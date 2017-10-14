@@ -26,6 +26,7 @@ import (
 type PagerV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	AlertsGetter
+	TestRunnersGetter
 }
 
 // PagerV1alpha1Client is used to interact with features provided by the pager.k8s.co group.
@@ -35,6 +36,10 @@ type PagerV1alpha1Client struct {
 
 func (c *PagerV1alpha1Client) Alerts(namespace string) AlertInterface {
 	return newAlerts(c, namespace)
+}
+
+func (c *PagerV1alpha1Client) TestRunners(namespace string) TestRunnerInterface {
+	return newTestRunners(c, namespace)
 }
 
 // NewForConfig creates a new PagerV1alpha1Client for the given config.

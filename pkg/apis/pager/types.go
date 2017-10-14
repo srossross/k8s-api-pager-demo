@@ -30,3 +30,30 @@ type AlertSpec struct {
 type AlertStatus struct {
 	Sent bool
 }
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+type TestRunner struct {
+	metav1.TypeMeta
+	metav1.ObjectMeta
+
+	Spec   TestRunnerSpec
+	Status TestRunnerStatus
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+type TestRunnerList struct {
+	metav1.TypeMeta
+	metav1.ObjectMeta
+
+	Items []TestRunner
+}
+
+type TestRunnerSpec struct {
+	Message string
+}
+
+type TestRunnerStatus struct {
+	Sent bool
+}

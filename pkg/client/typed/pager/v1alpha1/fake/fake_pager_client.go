@@ -30,6 +30,10 @@ func (c *FakePagerV1alpha1) Alerts(namespace string) v1alpha1.AlertInterface {
 	return &FakeAlerts{c, namespace}
 }
 
+func (c *FakePagerV1alpha1) TestRunners(namespace string) v1alpha1.TestRunnerInterface {
+	return &FakeTestRunners{c, namespace}
+}
+
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
 func (c *FakePagerV1alpha1) RESTClient() rest.Interface {

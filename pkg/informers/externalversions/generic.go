@@ -54,6 +54,8 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 	// Group=Pager, Version=V1alpha1
 	case v1alpha1.SchemeGroupVersion.WithResource("alerts"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Pager().V1alpha1().Alerts().Informer()}, nil
+	case v1alpha1.SchemeGroupVersion.WithResource("testrunners"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Pager().V1alpha1().TestRunners().Informer()}, nil
 
 	}
 

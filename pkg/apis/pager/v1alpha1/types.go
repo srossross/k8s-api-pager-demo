@@ -33,3 +33,33 @@ type AlertSpec struct {
 type AlertStatus struct {
 	Sent bool `json:"sent"`
 }
+
+// +genclient=true
+// +k8s:openapi-gen=true
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +resource:path=alerts
+
+type TestRunner struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec   TestRunnerSpec   `json:"spec,omitempty"`
+	Status TestRunnerStatus `json:"status,omitempty"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+type TestRunnerList struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Items []TestRunner `json:"items"`
+}
+
+type TestRunnerSpec struct {
+	Message string `json:"message"`
+}
+
+type TestRunnerStatus struct {
+	Sent bool `json:"sent"`
+}

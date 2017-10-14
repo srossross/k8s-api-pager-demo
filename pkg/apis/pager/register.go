@@ -31,6 +31,8 @@ func addKnownTypes(scheme *runtime.Scheme) error {
 	scheme.AddKnownTypes(SchemeGroupVersion,
 		&Alert{},
 		&AlertList{},
+		&TestRunner{},
+		&TestRunnerList{},
 	)
 	return nil
 }
