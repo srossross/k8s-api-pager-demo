@@ -7,12 +7,13 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/mitsuse/pushbullet-go"
-	"github.com/mitsuse/pushbullet-go/requests"
+	// "github.com/mitsuse/pushbullet-go"
+	// "github.com/mitsuse/pushbullet-go/requests"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
+	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
 	"github.com/munnerz/k8s-api-pager-demo/pkg/client"
@@ -21,15 +22,16 @@ import (
 
 var (
 	// apiserverURL is the URL of the API server to connect to
-	apiserverURL = flag.String("apiserver", "http://127.0.0.1:8001", "URL used to access the Kubernetes API server")
+	kubeconfig = flag.String("kubeconfig", "", "Path to a kubeconfig file")
 	// pushbulletToken is the pushbullet API token to use
-	pushbulletToken = flag.String("pushbullet-token", "", "the api token to use to send pushbullet messages")
+	// pushbulletToken = flag.String("pushbullet-token", "", "the api token to use to send pushbullet messages")
 
 	// queue is a queue of resources to be processed. It performs exponential
 	// backoff rate limiting, with a minimum retry period of 5 seconds and a
 	// maximum of 1 minute.
 	queue = workqueue.NewRateLimitingQueue(workqueue.NewItemExponentialFailureRateLimiter(time.Second*5, time.Minute))
 
+	config *rest.Config
 	// stopCh can be used to stop all the informer, as well as control loops
 	// within the application.
 	stopCh = make(chan struct{})
@@ -44,22 +46,27 @@ var (
 	cl client.Interface
 
 	// pb is the pushbullet client to use to send alerts
-	pb *pushbullet.Pushbullet
+	// pb *pushbullet.Pushbullet
 )
 
 func main() {
 	flag.Parse()
 
 	// create a client that can be used to send pushbullet notes
-	pb = pushbullet.New(*pushbulletToken)
+	// pb = pushbullet.New(*pushbulletToken)
 
-	log.Printf("Created pushbullet client.")
+	// log.Printf("Created pushbullet client.")
 
 	var err error
+
+	config, err = GetClientConfig(*kubeconfig)
+
+	if err != nil {
+		log.Fatalf("error creating config: %s", err.Error())
+	}
+
 	// create an instance of our own API client
-	cl, err = client.NewForConfig(&rest.Config{
-		Host: *apiserverURL,
-	})
+	cl, err = client.NewForConfig(config)
 
 	if err != nil {
 		log.Fatalf("error creating api client: %s", err.Error())
@@ -76,6 +83,20 @@ func main() {
 	informer := sharedFactory.Pager().V1alpha1().Alerts().Informer()
 	// we add a new event handler, watching for changes to API resources.
 	informer.AddEventHandler(
+		cache.ResourceEventHandlerFuncs{
+			AddFunc: enqueue,
+			UpdateFunc: func(old, cur interface{}) {
+				if !reflect.DeepEqual(old, cur) {
+					enqueue(cur)
+				}
+			},
+			DeleteFunc: enqueue,
+		},
+	)
+
+	trInformer := sharedFactory.Pager().V1alpha1().TestRunners().Informer()
+	// we add a new event handler, watching for changes to API resources.
+	trInformer.AddEventHandler(
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: enqueue,
 			UpdateFunc: func(old, cur interface{}) {
@@ -117,15 +138,15 @@ func sync(al *v1alpha1.Alert) error {
 	}
 
 	// create our note instance
-	note := requests.NewNote()
-	note.Title = fmt.Sprintf("Kubernetes alert for %s/%s", al.Namespace, al.Name)
-	note.Body = al.Spec.Message
+	// note := requests.NewNote()
+	log.Printf(fmt.Sprintf("Kubernetes alert for %s/%s", al.Namespace, al.Name))
+	log.Printf(al.Spec.Message)
 
 	// send the note. If an error occurs here, we return an error which will
 	// cause the calling function to re-queue the item to be tried again later.
-	if _, err := pb.PostPushesNote(note); err != nil {
-		return fmt.Errorf("error sending pushbullet message: %s", err.Error())
-	}
+	// if _, err := pb.PostPushesNote(note); err != nil {
+	// 	return fmt.Errorf("error sending pushbullet message: %s", err.Error())
+	// }
 	log.Printf("Sent pushbullet note!")
 
 	// as we've sent the note, we will update the resource accordingly.
@@ -220,4 +241,11 @@ func enqueue(obj interface{}) {
 	}
 	// add the item to the queue
 	queue.Add(key)
+}
+
+func GetClientConfig(kubeconfig string) (*rest.Config, error) {
+	if kubeconfig != "" {
+		return clientcmd.BuildConfigFromFlags("", kubeconfig)
+	}
+	return rest.InClusterConfig()
 }
