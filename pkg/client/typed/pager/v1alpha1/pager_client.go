@@ -26,6 +26,7 @@ import (
 type PagerV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	AlertsGetter
+	TestsGetter
 	TestRunnersGetter
 }
 
@@ -36,6 +37,10 @@ type PagerV1alpha1Client struct {
 
 func (c *PagerV1alpha1Client) Alerts(namespace string) AlertInterface {
 	return newAlerts(c, namespace)
+}
+
+func (c *PagerV1alpha1Client) Tests(namespace string) TestInterface {
+	return newTests(c, namespace)
 }
 
 func (c *PagerV1alpha1Client) TestRunners(namespace string) TestRunnerInterface {

@@ -1,0 +1,8 @@
+apiVersion: pager.k8s.co/v1alpha1
+kind: TestRunner
+metadata:
+  name: test-runn-1
+spec:
+  selector:
+    matchLabels:
+      chart: router

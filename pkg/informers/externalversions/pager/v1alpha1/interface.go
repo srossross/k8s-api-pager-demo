@@ -26,6 +26,8 @@ import (
 type Interface interface {
 	// Alerts returns a AlertInformer.
 	Alerts() AlertInformer
+	// Tests returns a TestInformer.
+	Tests() TestInformer
 	// TestRunners returns a TestRunnerInformer.
 	TestRunners() TestRunnerInformer
 }
@@ -42,6 +44,11 @@ func New(f internalinterfaces.SharedInformerFactory) Interface {
 // Alerts returns a AlertInformer.
 func (v *version) Alerts() AlertInformer {
 	return &alertInformer{factory: v.SharedInformerFactory}
+}
+
+// Tests returns a TestInformer.
+func (v *version) Tests() TestInformer {
+	return &testInformer{factory: v.SharedInformerFactory}
 }
 
 // TestRunners returns a TestRunnerInformer.

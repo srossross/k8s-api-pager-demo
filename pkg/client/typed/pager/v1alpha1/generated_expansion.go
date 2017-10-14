@@ -18,4 +18,6 @@ package v1alpha1
 
 type AlertExpansion interface{}
 
+type TestExpansion interface{}
+
 type TestRunnerExpansion interface{}

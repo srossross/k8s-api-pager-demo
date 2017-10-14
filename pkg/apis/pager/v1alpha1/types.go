@@ -37,7 +37,7 @@ type AlertStatus struct {
 // +genclient=true
 // +k8s:openapi-gen=true
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
-// +resource:path=alerts
+// +resource:path=testrunners
 
 type TestRunner struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -58,8 +58,50 @@ type TestRunnerList struct {
 
 type TestRunnerSpec struct {
 	Message string `json:"message"`
+
+	// Label selector for pods. Existing ReplicaSets whose pods are
+	// selected by this will be the ones affected by this deployment.
+	// +optional
+	Selector *metav1.LabelSelector `json:"selector,omitempty"`
+
 }
 
 type TestRunnerStatus struct {
+	Sent bool `json:"sent"`
+}
+
+// +genclient=true
+// +k8s:openapi-gen=true
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +resource:path=tests
+
+type Test struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Spec   TestSpec   `json:"spec,omitempty"`
+	Status TestStatus `json:"status,omitempty"`
+}
+
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+
+type TestList struct {
+	metav1.TypeMeta   `json:",inline"`
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	Items []Test `json:"items"`
+}
+
+type TestSpec struct {
+	Message string `json:"message"`
+
+	// Label selector for pods. Existing ReplicaSets whose pods are
+	// selected by this will be the ones affected by this deployment.
+	// +optional
+	Selector *metav1.LabelSelector `json:"selector,omitempty"`
+
+}
+
+type TestStatus struct {
 	Sent bool `json:"sent"`
 }

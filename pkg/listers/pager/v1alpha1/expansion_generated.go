@@ -26,6 +26,14 @@ type AlertListerExpansion interface{}
 // AlertNamespaceLister.
 type AlertNamespaceListerExpansion interface{}
 
+// TestListerExpansion allows custom methods to be added to
+// TestLister.
+type TestListerExpansion interface{}
+
+// TestNamespaceListerExpansion allows custom methods to be added to
+// TestNamespaceLister.
+type TestNamespaceListerExpansion interface{}
+
 // TestRunnerListerExpansion allows custom methods to be added to
 // TestRunnerLister.
 type TestRunnerListerExpansion interface{}

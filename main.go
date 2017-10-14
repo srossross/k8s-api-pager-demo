@@ -10,10 +10,14 @@ import (
 	// "github.com/mitsuse/pushbullet-go"
 	// "github.com/mitsuse/pushbullet-go/requests"
 	"k8s.io/apimachinery/pkg/util/runtime"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/client-go/tools/clientcmd"
+
+
 
 	"github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
 	"github.com/munnerz/k8s-api-pager-demo/pkg/client"
@@ -93,6 +97,18 @@ func main() {
 			DeleteFunc: enqueue,
 		},
 	)
+
+	// FIXME: this is not working
+	obj, err := cl.PagerV1alpha1().TestRunners("default").List(metav1.ListOptions{})
+	// obj, err := sharedFactory.Pager().V1alpha1().TestRunners().Lister().TestRunners("default").Get("cncf-test-runner")
+	if err != nil {
+		panic(err)
+		// return
+	}
+
+	log.Printf("--")
+	log.Printf("Started informer factory. %v", obj)
+	log.Printf("--")
 
 	trInformer := sharedFactory.Pager().V1alpha1().TestRunners().Informer()
 	// we add a new event handler, watching for changes to API resources.

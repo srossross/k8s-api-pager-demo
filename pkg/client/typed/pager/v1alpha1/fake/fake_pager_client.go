@@ -30,6 +30,10 @@ func (c *FakePagerV1alpha1) Alerts(namespace string) v1alpha1.AlertInterface {
 	return &FakeAlerts{c, namespace}
 }
 
+func (c *FakePagerV1alpha1) Tests(namespace string) v1alpha1.TestInterface {
+	return &FakeTests{c, namespace}
+}
+
 func (c *FakePagerV1alpha1) TestRunners(namespace string) v1alpha1.TestRunnerInterface {
 	return &FakeTestRunners{c, namespace}
 }
