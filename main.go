@@ -84,7 +84,7 @@ func main() {
 	// create/replace/update/delete operations are missed when watching
 	sharedFactory = factory.NewSharedInformerFactory(cl, time.Second*30)
 
-	informer := sharedFactory.Pager().V1alpha1().Alerts().Informer()
+	informer := sharedFactory.Pager().V1alpha1().TestRuns().Informer()
 	// we add a new event handler, watching for changes to API resources.
 	informer.AddEventHandler(
 		cache.ResourceEventHandlerFuncs{
@@ -99,8 +99,8 @@ func main() {
 	)
 
 	// FIXME: this is not working
-	obj, err := cl.PagerV1alpha1().TestRunners("default").List(metav1.ListOptions{})
-	// obj, err := sharedFactory.Pager().V1alpha1().TestRunners().Lister().TestRunners("default").Get("cncf-test-runner")
+	obj, err := cl.PagerV1alpha1().TestRuns("default").List(metav1.ListOptions{})
+	// obj, err := sharedFactory.Pager().V1alpha1().TestRuns().Lister().TestRuns("default").Get("cncf-test-runner")
 	if err != nil {
 		panic(err)
 		// return
@@ -109,20 +109,6 @@ func main() {
 	log.Printf("--")
 	log.Printf("Started informer factory. %v", obj)
 	log.Printf("--")
-
-	trInformer := sharedFactory.Pager().V1alpha1().TestRunners().Informer()
-	// we add a new event handler, watching for changes to API resources.
-	trInformer.AddEventHandler(
-		cache.ResourceEventHandlerFuncs{
-			AddFunc: enqueue,
-			UpdateFunc: func(old, cur interface{}) {
-				if !reflect.DeepEqual(old, cur) {
-					enqueue(cur)
-				}
-			},
-			DeleteFunc: enqueue,
-		},
-	)
 
 	// start the informer. This will cause it to begin receiving updates from
 	// the configured API server and firing event handlers in response.
@@ -146,7 +132,7 @@ func main() {
 // has already been sent, and if not will send it and update the resource
 // accordingly. This method is called whenever this controller starts, and
 // whenever the resource changes, and also periodically every resyncPeriod.
-func sync(al *v1alpha1.Alert) error {
+func sync(al *v1alpha1.TestRun) error {
 	// If this message has already been sent, we exit with no error
 	if al.Status.Sent {
 		log.Printf("Skipping already Sent alert '%s/%s'", al.Namespace, al.Name)
@@ -170,10 +156,10 @@ func sync(al *v1alpha1.Alert) error {
 	// will be sent. It's therefore worth noting that this control loop will
 	// send you *at least one* alert, and not *at most one*.
 	al.Status.Sent = true
-	if _, err := cl.PagerV1alpha1().Alerts(al.Namespace).Update(al); err != nil {
-		return fmt.Errorf("error saving update to pager Alert resource: %s", err.Error())
+	if _, err := cl.PagerV1alpha1().TestRuns(al.Namespace).Update(al); err != nil {
+		return fmt.Errorf("error saving update to pager TestRun resource: %s", err.Error())
 	}
-	log.Printf("Finished saving update to pager Alert resource '%s/%s'", al.Namespace, al.Name)
+	log.Printf("Finished saving update to pager TestRun resource '%s/%s'", al.Namespace, al.Name)
 
 	// we didn't encounter any errors, so we return nil to allow the callee
 	// to 'forget' this item from the queue altogether.
@@ -216,7 +202,7 @@ func work() {
 			log.Printf("Read item '%s/%s' off workqueue. Processing...", namespace, name)
 
 			// retrieve the latest version in the cache of this alert
-			obj, err := sharedFactory.Pager().V1alpha1().Alerts().Lister().Alerts(namespace).Get(name)
+			obj, err := sharedFactory.Pager().V1alpha1().TestRuns().Lister().TestRuns(namespace).Get(name)
 
 			if err != nil {
 				runtime.HandleError(fmt.Errorf("error getting object '%s/%s' from api: %s", namespace, name, err.Error()))

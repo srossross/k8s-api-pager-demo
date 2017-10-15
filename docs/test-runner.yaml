@@ -1,7 +1,7 @@
 apiVersion: pager.k8s.co/v1alpha1
-kind: TestRunner
+kind: TestRun
 metadata:
-  name: test-runn-1
+  name: test-run1
 spec:
   selector:
     matchLabels:

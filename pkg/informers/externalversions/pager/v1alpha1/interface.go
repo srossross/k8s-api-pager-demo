@@ -24,12 +24,10 @@ import (
 
 // Interface provides access to all the informers in this group version.
 type Interface interface {
-	// Alerts returns a AlertInformer.
-	Alerts() AlertInformer
 	// Tests returns a TestInformer.
 	Tests() TestInformer
-	// TestRunners returns a TestRunnerInformer.
-	TestRunners() TestRunnerInformer
+	// TestRuns returns a TestRunInformer.
+	TestRuns() TestRunInformer
 }
 
 type version struct {
@@ -41,17 +39,12 @@ func New(f internalinterfaces.SharedInformerFactory) Interface {
 	return &version{f}
 }
 
-// Alerts returns a AlertInformer.
-func (v *version) Alerts() AlertInformer {
-	return &alertInformer{factory: v.SharedInformerFactory}
-}
-
 // Tests returns a TestInformer.
 func (v *version) Tests() TestInformer {
 	return &testInformer{factory: v.SharedInformerFactory}
 }
 
-// TestRunners returns a TestRunnerInformer.
-func (v *version) TestRunners() TestRunnerInformer {
-	return &testRunnerInformer{factory: v.SharedInformerFactory}
+// TestRuns returns a TestRunInformer.
+func (v *version) TestRuns() TestRunInformer {
+	return &testRunInformer{factory: v.SharedInformerFactory}
 }

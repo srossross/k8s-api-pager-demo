@@ -18,14 +18,6 @@ limitations under the License.
 
 package v1alpha1
 
-// AlertListerExpansion allows custom methods to be added to
-// AlertLister.
-type AlertListerExpansion interface{}
-
-// AlertNamespaceListerExpansion allows custom methods to be added to
-// AlertNamespaceLister.
-type AlertNamespaceListerExpansion interface{}
-
 // TestListerExpansion allows custom methods to be added to
 // TestLister.
 type TestListerExpansion interface{}
@@ -34,10 +26,10 @@ type TestListerExpansion interface{}
 // TestNamespaceLister.
 type TestNamespaceListerExpansion interface{}
 
-// TestRunnerListerExpansion allows custom methods to be added to
-// TestRunnerLister.
-type TestRunnerListerExpansion interface{}
+// TestRunListerExpansion allows custom methods to be added to
+// TestRunLister.
+type TestRunListerExpansion interface{}
 
-// TestRunnerNamespaceListerExpansion allows custom methods to be added to
-// TestRunnerNamespaceLister.
-type TestRunnerNamespaceListerExpansion interface{}
+// TestRunNamespaceListerExpansion allows custom methods to be added to
+// TestRunNamespaceLister.
+type TestRunNamespaceListerExpansion interface{}

@@ -16,8 +16,6 @@ limitations under the License.
 
 package v1alpha1
 
-type AlertExpansion interface{}
-
 type TestExpansion interface{}
 
-type TestRunnerExpansion interface{}
+type TestRunExpansion interface{}

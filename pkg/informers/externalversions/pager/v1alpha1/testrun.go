@@ -30,28 +30,28 @@ import (
 	time "time"
 )
 
-// TestRunnerInformer provides access to a shared informer and lister for
-// TestRunners.
-type TestRunnerInformer interface {
+// TestRunInformer provides access to a shared informer and lister for
+// TestRuns.
+type TestRunInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1alpha1.TestRunnerLister
+	Lister() v1alpha1.TestRunLister
 }
 
-type testRunnerInformer struct {
+type testRunInformer struct {
 	factory internalinterfaces.SharedInformerFactory
 }
 
-func newTestRunnerInformer(client client.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+func newTestRunInformer(client client.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
 	sharedIndexInformer := cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
-				return client.PagerV1alpha1().TestRunners(v1.NamespaceAll).List(options)
+				return client.PagerV1alpha1().TestRuns(v1.NamespaceAll).List(options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
-				return client.PagerV1alpha1().TestRunners(v1.NamespaceAll).Watch(options)
+				return client.PagerV1alpha1().TestRuns(v1.NamespaceAll).Watch(options)
 			},
 		},
-		&pager_v1alpha1.TestRunner{},
+		&pager_v1alpha1.TestRun{},
 		resyncPeriod,
 		cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc},
 	)
@@ -59,10 +59,10 @@ func newTestRunnerInformer(client client.Interface, resyncPeriod time.Duration) 
 	return sharedIndexInformer
 }
 
-func (f *testRunnerInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&pager_v1alpha1.TestRunner{}, newTestRunnerInformer)
+func (f *testRunInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&pager_v1alpha1.TestRun{}, newTestRunInformer)
 }
 
-func (f *testRunnerInformer) Lister() v1alpha1.TestRunnerLister {
-	return v1alpha1.NewTestRunnerLister(f.Informer().GetIndexer())
+func (f *testRunInformer) Lister() v1alpha1.TestRunLister {
+	return v1alpha1.NewTestRunLister(f.Informer().GetIndexer())
 }
