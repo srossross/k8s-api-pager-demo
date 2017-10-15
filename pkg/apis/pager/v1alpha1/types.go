@@ -2,6 +2,7 @@ package v1alpha1
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 // +genclient=true
@@ -63,13 +64,11 @@ type TestList struct {
 }
 
 type TestSpec struct {
-	Message string `json:"message"`
 
 	// Label selector for pods. Existing ReplicaSets whose pods are
 	// selected by this will be the ones affected by this deployment.
 	// +optional
-	Selector *metav1.LabelSelector `json:"selector,omitempty"`
-
+	Template corev1.PodTemplateSpec `json:"template"`
 }
 
 type TestStatus struct {

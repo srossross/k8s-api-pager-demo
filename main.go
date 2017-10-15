@@ -21,6 +21,7 @@ import (
 
 	"github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
 	"github.com/munnerz/k8s-api-pager-demo/pkg/client"
+	"github.com/munnerz/k8s-api-pager-demo/pkg/run"
 	factory "github.com/munnerz/k8s-api-pager-demo/pkg/informers/externalversions"
 )
 
@@ -33,7 +34,8 @@ var (
 	// queue is a queue of resources to be processed. It performs exponential
 	// backoff rate limiting, with a minimum retry period of 5 seconds and a
 	// maximum of 1 minute.
-	queue = workqueue.NewRateLimitingQueue(workqueue.NewItemExponentialFailureRateLimiter(time.Second*5, time.Minute))
+	rateLimiter = workqueue.NewItemExponentialFailureRateLimiter(time.Second*5, time.Minute)
+	queue = workqueue.NewRateLimitingQueue(rateLimiter)
 
 	config *rest.Config
 	// stopCh can be used to stop all the informer, as well as control loops
@@ -99,16 +101,43 @@ func main() {
 	)
 
 	// FIXME: this is not working
-	obj, err := cl.PagerV1alpha1().TestRuns("default").List(metav1.ListOptions{})
+	run1, err := cl.PagerV1alpha1().TestRuns("default").Get("test-run1", metav1.GetOptions{})
 	// obj, err := sharedFactory.Pager().V1alpha1().TestRuns().Lister().TestRuns("default").Get("cncf-test-runner")
 	if err != nil {
 		panic(err)
 		// return
 	}
 
+	log.Printf("Namespace: '%v'", run1.Namespace)
+
+	selector, err := metav1.LabelSelectorAsSelector(run1.Spec.Selector)
+
+	if err != nil {
+		panic(err)
+		// return
+	}
+
+	log.Printf("Selector: '%v'", selector)
 	log.Printf("--")
-	log.Printf("Started informer factory. %v", obj)
-	log.Printf("--")
+
+
+	matchingTests, err := cl.PagerV1alpha1().Tests(run1.Namespace).List(metav1.ListOptions{
+		LabelSelector: selector.String(),
+	})
+	// matchingTests, err := cl.PagerV1alpha1().Tests(run1.Namespace).List(metav1.ListOptions{})
+
+	if err != nil {
+		panic("can not get tests")
+		// return
+	}
+
+	for _, matchingTest := range matchingTests.Items {
+		run.RunTest(cl, run1, matchingTest)
+		// log.Printf("matchingTest %v", matchingTest.Spec.Template)
+	}
+
+
+	panic("!all good!")
 
 	// start the informer. This will cause it to begin receiving updates from
 	// the configured API server and firing event handlers in response.
@@ -132,17 +161,17 @@ func main() {
 // has already been sent, and if not will send it and update the resource
 // accordingly. This method is called whenever this controller starts, and
 // whenever the resource changes, and also periodically every resyncPeriod.
-func sync(al *v1alpha1.TestRun) error {
+func sync(tr *v1alpha1.TestRun) error {
 	// If this message has already been sent, we exit with no error
-	if al.Status.Sent {
-		log.Printf("Skipping already Sent alert '%s/%s'", al.Namespace, al.Name)
+	if tr.Status.Sent {
+		log.Printf("Skipping already Sent alert '%s/%s'", tr.Namespace, tr.Name)
 		return nil
 	}
 
 	// create our note instance
 	// note := requests.NewNote()
-	log.Printf(fmt.Sprintf("Kubernetes alert for %s/%s", al.Namespace, al.Name))
-	log.Printf(al.Spec.Message)
+	log.Printf(fmt.Sprintf("Kubernetes alert for %s/%s", tr.Namespace, tr.Name))
+	log.Printf(tr.Spec.Message)
 
 	// send the note. If an error occurs here, we return an error which will
 	// cause the calling function to re-queue the item to be tried again later.
@@ -155,11 +184,11 @@ func sync(al *v1alpha1.TestRun) error {
 	// if this request fails, this item will be requeued and a second alert
 	// will be sent. It's therefore worth noting that this control loop will
 	// send you *at least one* alert, and not *at most one*.
-	al.Status.Sent = true
-	if _, err := cl.PagerV1alpha1().TestRuns(al.Namespace).Update(al); err != nil {
+	tr.Status.Sent = true
+	if _, err := cl.PagerV1alpha1().TestRuns(tr.Namespace).Update(tr); err != nil {
 		return fmt.Errorf("error saving update to pager TestRun resource: %s", err.Error())
 	}
-	log.Printf("Finished saving update to pager TestRun resource '%s/%s'", al.Namespace, al.Name)
+	log.Printf("Finished saving update to pager TestRun resource '%s/%s'", tr.Namespace, tr.Name)
 
 	// we didn't encounter any errors, so we return nil to allow the callee
 	// to 'forget' this item from the queue altogether.

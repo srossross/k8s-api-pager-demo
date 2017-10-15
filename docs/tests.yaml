@@ -1,0 +1,25 @@
+apiVersion: pager.k8s.co/v1alpha1
+kind: Test
+metadata:
+  name: test1
+  labels:
+    chart: router
+spec:
+  template:
+    spec:
+      containers:
+        - name: c1
+          image: busybox
+---
+apiVersion: pager.k8s.co/v1alpha1
+kind: Test
+metadata:
+  name: test2
+  labels:
+    chart: api
+spec:
+  template:
+    spec:
+      containers:
+        - name: c1
+          image: busybox
