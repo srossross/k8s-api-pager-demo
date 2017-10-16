@@ -18,10 +18,10 @@ var (
 	StatusComplete = "Complete"
 )
 
-func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface, testRun *v1alpha1.TestRun) {
+func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface, testRun *v1alpha1.TestRun) error {
 	if testRun.Status.Status == StatusComplete {
 		log.Printf("TestRun: %v is already Complete - Skipping", testRun.Name)
-		return
+		return nil
 	}
 
 	log.Printf("Reconcile TestRun: %v", testRun.Name)
@@ -29,23 +29,20 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 	selector, err := metav1.LabelSelectorAsSelector(testRun.Spec.Selector)
 
 	if err != nil {
-		runtime.HandleError(fmt.Errorf("error getting test selector: %s", err.Error()))
-		return
+		return fmt.Errorf("error getting test selector: %s", err.Error())
 	}
 
 	tests, err := sharedFactory.Srossross().V1alpha1().Tests().Lister().Tests(testRun.Namespace).List(selector)
 
 	if err != nil {
-		runtime.HandleError(fmt.Errorf("error getting list of tests: %s", err.Error()))
-		return
+		return fmt.Errorf("error getting list of tests: %s", err.Error())
 	}
 
 	log.Printf("  Test Count: %v", len(tests))
 
 	pods, err := GetPodLister(sharedFactory).Pods(testRun.Namespace).List(labels.Everything())
 	if err != nil {
-		runtime.HandleError(fmt.Errorf("Error getting list of pods: %s", err.Error()))
-		return
+		return fmt.Errorf("Error getting list of pods: %s", err.Error())
 	}
 
 	pods = testRunFilter(pods, testRun.Name)
@@ -73,7 +70,7 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 	for _, test := range tests {
 		if JobsSlots <= 0 {
 			log.Printf("  No more jobs allowed. moving on...", test.Name)
-			return
+			return nil
 		}
 
 		log.Printf("  Test: %v", test.Name)
@@ -101,7 +98,12 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 				continue
 			}
 		} else {
-			CreateTestPod(cl, testRun, test)
+			err = CreateTestPod(cl, testRun, test)
+
+			if err != nil {
+				return err
+			}
+
 			JobsSlots -= 1
 		}
 	}
@@ -117,15 +119,14 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 		}
 		log.Printf("Saving '%v/%v'", testRun.Namespace, testRun.Name)
 		if _, err := cl.SrossrossV1alpha1().TestRuns(testRun.Namespace).Update(testRun); err != nil {
-			runtime.HandleError(fmt.Errorf("error saving update to tesrun: %s", err.Error()))
+			return err
 		}
-
 		log.Printf("We are done here %v tests completed", completedCount)
 	} else {
 		log.Printf("Completed %v of %v tests", completedCount, len(tests))
 	}
 
-
+	return nil
 }
 
 func Reconcile(sharedFactory factory.SharedInformerFactory, cl client.Interface) {
@@ -137,9 +138,27 @@ func Reconcile(sharedFactory factory.SharedInformerFactory, cl client.Interface)
     runtime.HandleError(fmt.Errorf("error getting list of testruns: %s", err.Error()))
     return
   }
-
+	// FIXME: make our informers more efficient
+	// informer should queue the testrun we care about instead of looping...
   for _, testRun := range runs {
-		TestRunner(sharedFactory, cl, testRun)
+		err := TestRunner(sharedFactory, cl, testRun)
+
+		if err != nil {
+			testRun.Status.Status = StatusComplete
+			testRun.Status.Success = false
+			testRun.Status.Message = fmt.Sprintf("Critical error during test run (%v)", err.Error())
+
+			if len(testRun.Namespace) == 0 {
+				testRun.Namespace = "default"
+			}
+
+			log.Printf("Saving Error state for '%v/%v'", testRun.Namespace, testRun.Name)
+			if _, err := cl.SrossrossV1alpha1().TestRuns(testRun.Namespace).Update(testRun); err != nil {
+				runtime.HandleError(fmt.Errorf("Error saving update to testrun (This could cause an infinite Reconcile loop): %s", err.Error()))
+
+			}
+
+		}
 	}
 
 }

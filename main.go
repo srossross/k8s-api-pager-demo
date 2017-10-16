@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"reflect"
 	"time"
 
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -74,47 +73,12 @@ func main() {
 	// create/replace/update/delete operations are missed when watching
 	sharedFactory = factory.NewSharedInformerFactory(cl, time.Second*30)
 
-	informer := sharedFactory.Srossross().V1alpha1().TestRuns().Informer()
-	// we add a new event handler, watching for changes to API resources.
-	informer.AddEventHandler(
-		cache.ResourceEventHandlerFuncs{
-			AddFunc: enqueue,
-			UpdateFunc: func(old, cur interface{}) {
-				if !reflect.DeepEqual(old, cur) {
-					enqueue(cur)
-				}
-			},
-			DeleteFunc: enqueue,
-		},
-	)
+	testRunInformer := run.NewTestRunInformer(sharedFactory, queue)
 
-	testInformer := sharedFactory.Srossross().V1alpha1().Tests().Informer()
-	// we add a new event handler, watching for changes to API resources.
-	testInformer.AddEventHandler(
-		cache.ResourceEventHandlerFuncs{
-			AddFunc: enqueue,
-			UpdateFunc: func(old, cur interface{}) {
-				if !reflect.DeepEqual(old, cur) {
-					enqueue(cur)
-				}
-			},
-			DeleteFunc: enqueue,
-		},
-	)
+	testInformer := run.NewTestInformer(sharedFactory, queue)
 
-	podInformer := run.GetPodInformer(sharedFactory)
+	podInformer := run.NewPodInformer(sharedFactory, queue)
 
-	podInformer.AddEventHandler(
-		cache.ResourceEventHandlerFuncs{
-			AddFunc: enqueue,
-			UpdateFunc: func(old, cur interface{}) {
-				if !reflect.DeepEqual(old, cur) {
-					enqueue(cur)
-				}
-			},
-			DeleteFunc: enqueue,
-		},
-	)
 
 	// start the informer. This will cause it to begin receiving updates from
 	// the configured API server and firing event handlers in response.
@@ -123,8 +87,12 @@ func main() {
 
 	// wait for the informe rcache to finish performing it's initial sync of
 	// resources
-	if !cache.WaitForCacheSync(stopCh, informer.HasSynced) {
-		log.Fatalf("error waiting for informer cache to sync: %s", err.Error())
+	if !cache.WaitForCacheSync(stopCh, testRunInformer.HasSynced) {
+		log.Fatalf("error waiting for testRunInformer cache to sync: %s", err.Error())
+	}
+
+	if !cache.WaitForCacheSync(stopCh, testInformer.HasSynced) {
+		log.Fatalf("error waiting for testInformer cache to sync: %s", err.Error())
 	}
 
 	if !cache.WaitForCacheSync(stopCh, podInformer.HasSynced) {
