@@ -8,18 +8,8 @@ spec:
   template:
     spec:
       containers:
-        - name: c1
-          image: busybox
----
-apiVersion: pager.k8s.co/v1alpha1
-kind: Test
-metadata:
-  name: test2
-  labels:
-    chart: api
-spec:
-  template:
-    spec:
-      containers:
-        - name: c1
-          image: busybox
+      - name: nginx
+        image: nginx
+        command: [echo, hello]
+      restartPolicy: Never
+      backoffLimit: 4

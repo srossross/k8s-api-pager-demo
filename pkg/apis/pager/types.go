@@ -25,8 +25,10 @@ type TestRunList struct {
 
 type TestRunSpec struct {
 	Message string
+	Selector *metav1.LabelSelector
+	MaxJobs int
 }
 
 type TestRunStatus struct {
-	Sent bool
+	Status string
 }

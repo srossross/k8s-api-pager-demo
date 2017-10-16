@@ -10,7 +10,7 @@ import (
   v1alpha1 "github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
 )
 
-func CreateTestRunEvent(cl client.Interface, testRun *v1alpha1.TestRun, test v1alpha1.Test, Reason string, Message string) (error) {
+func CreateTestRunEvent(cl client.Interface, testRun *v1alpha1.TestRun, test *v1alpha1.Test, Reason string, Message string) (error) {
 
   objectReference := v1.ObjectReference{
     // FIXME: not sure why testRun.Kind is empty
@@ -31,6 +31,7 @@ func CreateTestRunEvent(cl client.Interface, testRun *v1alpha1.TestRun, test v1a
     objectReference,
     Reason,
     Message,
+    // FIXME: populate with real values
     v1.EventSource{
       "test-runner",
       "hostname",
@@ -51,7 +52,7 @@ func CreateTestRunEvent(cl client.Interface, testRun *v1alpha1.TestRun, test v1a
 
 }
 
-func CreateTestRunEventStart(cl client.Interface, testRun *v1alpha1.TestRun, test v1alpha1.Test) (error) {
+func CreateTestRunEventStart(cl client.Interface, testRun *v1alpha1.TestRun, test *v1alpha1.Test) (error) {
   return CreateTestRunEvent(
     cl, testRun, test,
     "TestStart",
@@ -59,7 +60,7 @@ func CreateTestRunEventStart(cl client.Interface, testRun *v1alpha1.TestRun, tes
   )
 }
 
-func RunTest(cl client.Interface, testRun *v1alpha1.TestRun, test v1alpha1.Test) (error){
+func CreateTestPod(cl client.Interface, testRun *v1alpha1.TestRun, test *v1alpha1.Test) (error){
 	log.Printf("RunTest")
 	log.Printf("Test '%v'", test)
 
@@ -68,25 +69,35 @@ func RunTest(cl client.Interface, testRun *v1alpha1.TestRun, test v1alpha1.Test)
     return err
   }
 
-  // cl.CoreV1().Pods(test.Namespace).Get("p1", metav1.GetOptions{})
-
+  // TODO: use template labels and Annotations
   pod := &v1.Pod{
     metav1.TypeMeta{},
     metav1.ObjectMeta{
       GenerateName: test.Name,
       Namespace: test.Namespace,
+      Annotations: map[string]string{
+        "test-run": testRun.Name,
+        "test": test.Name,
+        "test-fullname": fmt.Sprintf("%s/%s", testRun.Name, test.Name),
+      },
     },
     test.Spec.Template.Spec,
     v1.PodStatus{},
   }
-  log.Printf("Pod '%v'", pod)
 
-  // result, err := cl.CoreV1().Pods(test.Namespace).Create(pod)
-  // if err != nil {
-  //   log.Printf("Error Creating pod while starting test %v", err)
-  //   return err
-  // }
 
+  result, err := cl.CoreV1().Pods(test.Namespace).Create(pod)
+  if err != nil {
+    CreateTestRunEvent(
+      cl, testRun, test, "PodCreationFailure",
+      fmt.Sprintf("Could not create pod for test %s", test.Name),
+    )
+    log.Printf("Error Creating pod while starting test %v", err)
+
+    return err
+  }
+
+  log.Printf("Pod '%v'", result)
 
   return nil
 }

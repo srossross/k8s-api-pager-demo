@@ -7,19 +7,12 @@ import (
 	"reflect"
 	"time"
 
-	// "github.com/mitsuse/pushbullet-go"
-	// "github.com/mitsuse/pushbullet-go/requests"
 	"k8s.io/apimachinery/pkg/util/runtime"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/client-go/tools/clientcmd"
 
-
-
-	"github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
 	"github.com/munnerz/k8s-api-pager-demo/pkg/client"
 	"github.com/munnerz/k8s-api-pager-demo/pkg/run"
 	factory "github.com/munnerz/k8s-api-pager-demo/pkg/informers/externalversions"
@@ -58,11 +51,6 @@ var (
 func main() {
 	flag.Parse()
 
-	// create a client that can be used to send pushbullet notes
-	// pb = pushbullet.New(*pushbulletToken)
-
-	// log.Printf("Created pushbullet client.")
-
 	var err error
 
 	config, err = GetClientConfig(*kubeconfig)
@@ -100,44 +88,73 @@ func main() {
 		},
 	)
 
-	// FIXME: this is not working
-	run1, err := cl.PagerV1alpha1().TestRuns("default").Get("test-run1", metav1.GetOptions{})
-	// obj, err := sharedFactory.Pager().V1alpha1().TestRuns().Lister().TestRuns("default").Get("cncf-test-runner")
-	if err != nil {
-		panic(err)
-		// return
-	}
+	testInformer := sharedFactory.Pager().V1alpha1().Tests().Informer()
+	// we add a new event handler, watching for changes to API resources.
+	testInformer.AddEventHandler(
+		cache.ResourceEventHandlerFuncs{
+			AddFunc: enqueue,
+			UpdateFunc: func(old, cur interface{}) {
+				if !reflect.DeepEqual(old, cur) {
+					enqueue(cur)
+				}
+			},
+			DeleteFunc: enqueue,
+		},
+	)
 
-	log.Printf("Namespace: '%v'", run1.Namespace)
+	podInformer := run.GetPodInformer(sharedFactory)
 
-	selector, err := metav1.LabelSelectorAsSelector(run1.Spec.Selector)
+	podInformer.AddEventHandler(
+		cache.ResourceEventHandlerFuncs{
+			AddFunc: enqueue,
+			UpdateFunc: func(old, cur interface{}) {
+				if !reflect.DeepEqual(old, cur) {
+					enqueue(cur)
+				}
+			},
+			DeleteFunc: enqueue,
+		},
+	)
 
-	if err != nil {
-		panic(err)
-		// return
-	}
-
-	log.Printf("Selector: '%v'", selector)
-	log.Printf("--")
-
-
-	matchingTests, err := cl.PagerV1alpha1().Tests(run1.Namespace).List(metav1.ListOptions{
-		LabelSelector: selector.String(),
-	})
-	// matchingTests, err := cl.PagerV1alpha1().Tests(run1.Namespace).List(metav1.ListOptions{})
-
-	if err != nil {
-		panic("can not get tests")
-		// return
-	}
-
-	for _, matchingTest := range matchingTests.Items {
-		run.RunTest(cl, run1, matchingTest)
-		// log.Printf("matchingTest %v", matchingTest.Spec.Template)
-	}
-
-
-	panic("!all good!")
+	// TODO: remove comments
+	// run1, err := cl.PagerV1alpha1().TestRuns("default").Get("test-run1", metav1.GetOptions{})
+	// // obj, err := sharedFactory.Pager().V1alpha1().TestRuns().Lister().TestRuns("default").Get("cncf-test-runner")
+	// if err != nil {
+	// 	panic(err)
+	// 	// return
+	// }
+	//
+	// log.Printf("Namespace: '%v'", run1.Namespace)
+	//
+	// selector, err := metav1.LabelSelectorAsSelector(run1.Spec.Selector)
+	//
+	// if err != nil {
+	// 	panic(err)
+	// 	// return
+	// }
+	//
+	// log.Printf("Selector: '%v'", selector)
+	// log.Printf("--")
+	//
+	//
+	// matchingTests, err := cl.PagerV1alpha1().Tests(run1.Namespace).List(metav1.ListOptions{
+	// 	LabelSelector: selector.String(),
+	// })
+	// // matchingTests, err := cl.PagerV1alpha1().Tests(run1.Namespace).List(metav1.ListOptions{})
+	//
+	// if err != nil {
+	// 	log.Fatalf("Could not get tests: %s", err.Error())
+	// 	panic("can not get tests", )
+	// 	// return
+	// }
+	//
+	// for _, matchingTest := range matchingTests.Items {
+	// 	run.RunTest(cl, run1, matchingTest)
+	// 	// log.Printf("matchingTest %v", matchingTest.Spec.Template)
+	// }
+	//
+	//
+	// panic("!all good!")
 
 	// start the informer. This will cause it to begin receiving updates from
 	// the configured API server and firing event handlers in response.
@@ -150,6 +167,10 @@ func main() {
 		log.Fatalf("error waiting for informer cache to sync: %s", err.Error())
 	}
 
+	if !cache.WaitForCacheSync(stopCh, podInformer.HasSynced) {
+		log.Fatalf("error waiting for podInformer cache to sync: %s", err.Error())
+	}
+
 	log.Printf("Finished populating shared informer cache.")
 	// here we start just one worker reading objects off the queue. If you
 	// wanted to parallelize this, you could start many instances of the worker
@@ -157,43 +178,6 @@ func main() {
 	work()
 }
 
-// sync will attempt to 'Sync' an alert resource. It checks to see if the alert
-// has already been sent, and if not will send it and update the resource
-// accordingly. This method is called whenever this controller starts, and
-// whenever the resource changes, and also periodically every resyncPeriod.
-func sync(tr *v1alpha1.TestRun) error {
-	// If this message has already been sent, we exit with no error
-	if tr.Status.Sent {
-		log.Printf("Skipping already Sent alert '%s/%s'", tr.Namespace, tr.Name)
-		return nil
-	}
-
-	// create our note instance
-	// note := requests.NewNote()
-	log.Printf(fmt.Sprintf("Kubernetes alert for %s/%s", tr.Namespace, tr.Name))
-	log.Printf(tr.Spec.Message)
-
-	// send the note. If an error occurs here, we return an error which will
-	// cause the calling function to re-queue the item to be tried again later.
-	// if _, err := pb.PostPushesNote(note); err != nil {
-	// 	return fmt.Errorf("error sending pushbullet message: %s", err.Error())
-	// }
-	log.Printf("Sent pushbullet note!")
-
-	// as we've sent the note, we will update the resource accordingly.
-	// if this request fails, this item will be requeued and a second alert
-	// will be sent. It's therefore worth noting that this control loop will
-	// send you *at least one* alert, and not *at most one*.
-	tr.Status.Sent = true
-	if _, err := cl.PagerV1alpha1().TestRuns(tr.Namespace).Update(tr); err != nil {
-		return fmt.Errorf("error saving update to pager TestRun resource: %s", err.Error())
-	}
-	log.Printf("Finished saving update to pager TestRun resource '%s/%s'", tr.Namespace, tr.Name)
-
-	// we didn't encounter any errors, so we return nil to allow the callee
-	// to 'forget' this item from the queue altogether.
-	return nil
-}
 
 func work() {
 	for {
@@ -219,39 +203,8 @@ func work() {
 		// use 'defer' to make sure the message is marked as Done on the queue
 		func(key string) {
 			defer queue.Done(key)
-
-			// attempt to split the 'key' into namespace and object name
-			namespace, name, err := cache.SplitMetaNamespaceKey(strKey)
-
-			if err != nil {
-				runtime.HandleError(fmt.Errorf("error splitting meta namespace key into parts: %s", err.Error()))
-				return
-			}
-
-			log.Printf("Read item '%s/%s' off workqueue. Processing...", namespace, name)
-
-			// retrieve the latest version in the cache of this alert
-			obj, err := sharedFactory.Pager().V1alpha1().TestRuns().Lister().TestRuns(namespace).Get(name)
-
-			if err != nil {
-				runtime.HandleError(fmt.Errorf("error getting object '%s/%s' from api: %s", namespace, name, err.Error()))
-				return
-			}
-
-			log.Printf("Got most up to date version of '%s/%s'. Syncing...", namespace, name)
-
-			// attempt to sync the current state of the world with the desired!
-			// If sync returns an error, we skip calling `queue.Forget`,
-			// thus causing the resource to be requeued at a later time.
-			if err := sync(obj); err != nil {
-				runtime.HandleError(fmt.Errorf("error processing item '%s/%s': %s", namespace, name, err.Error()))
-				return
-			}
-
-			log.Printf("Finished processing '%s/%s' successfully! Removing from queue.", namespace, name)
-
-			// as we managed to process this successfully, we can forget it
-			// from the work queue altogether.
+			log.Printf("Read item '%s' off workqueue.", key)
+			run.Reconcile(sharedFactory, cl)
 			queue.Forget(key)
 		}(strKey)
 	}
@@ -265,13 +218,13 @@ func enqueue(obj interface{}) {
 	// much later than now, and so we want to ensure it gets a fresh copy of
 	// the resource when it starts. Also, this allows us to keep adding the
 	// same item into the work queue without duplicates building up.
-	key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
-	if err != nil {
-		runtime.HandleError(fmt.Errorf("error obtaining key for object being enqueue: %s", err.Error()))
-		return
-	}
+	// key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
+	// if err != nil {
+	// 	runtime.HandleError(fmt.Errorf("error obtaining key for object being enqueue: %s", err.Error()))
+	// 	return
+	// }
 	// add the item to the queue
-	queue.Add(key)
+	queue.Add("Reconcile")
 }
 
 func GetClientConfig(kubeconfig string) (*rest.Config, error) {

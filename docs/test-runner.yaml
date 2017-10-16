@@ -1,8 +1,9 @@
 apiVersion: pager.k8s.co/v1alpha1
 kind: TestRun
 metadata:
-  name: test-run1
+  name: test-run2
 spec:
+  max-jobs: 2
   selector:
     matchLabels:
       chart: router

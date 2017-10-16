@@ -34,11 +34,12 @@ type TestRunSpec struct {
 	// selected by this will be the ones affected by this deployment.
 	// +optional
 	Selector *metav1.LabelSelector `json:"selector,omitempty"`
-
+	MaxJobs int `json:"max-jobs"`
 }
 
+
 type TestRunStatus struct {
-	Sent bool `json:"sent"`
+	Status string `json:"status"`
 }
 
 // +genclient=true
