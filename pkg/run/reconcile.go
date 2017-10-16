@@ -8,10 +8,10 @@ import (
 	runtime "k8s.io/apimachinery/pkg/util/runtime"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
-	client "github.com/munnerz/k8s-api-pager-demo/pkg/client"
-	factory "github.com/munnerz/k8s-api-pager-demo/pkg/informers/externalversions"
+	client "github.com//pkg/client"
+	factory "github.com//pkg/informers/externalversions"
 
-	v1alpha1 "github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
+	v1alpha1 "github.com//pkg/apis/pager/v1alpha1"
 )
 
 var (
@@ -69,6 +69,7 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 	log.Printf("JobsSlots %v", JobsSlots)
 
 	completedCount := 0
+	failCount := 0
 	for _, test := range tests {
 		if JobsSlots <= 0 {
 			log.Printf("  No more jobs allowed. moving on...", test.Name)
@@ -85,9 +86,11 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 				continue
 			case "Failed":
 				completedCount += 1
+				failCount += 1
 				continue
 			case "Unknown":
 				completedCount += 1
+				failCount += 1
 				continue
 			// These are running and taking up a job slot!
 			case "Pending":
@@ -104,7 +107,11 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 	}
 
 	if completedCount == len(tests) {
+
 		testRun.Status.Status = StatusComplete
+		testRun.Status.Success = failCount == 0
+		testRun.Status.Message = fmt.Sprintf("Ran %v tests, %v failures", completedCount, failCount)
+
 		if _, err := cl.PagerV1alpha1().TestRuns(testRun.Namespace).Update(testRun); err != nil {
 			runtime.HandleError(fmt.Errorf("error saving update to tesrun: %s", err.Error()))
 		}

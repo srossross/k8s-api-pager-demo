@@ -21,7 +21,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-	pager "github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager"
+	pager "github.com//pkg/apis/pager"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	conversion "k8s.io/apimachinery/pkg/conversion"
 	runtime "k8s.io/apimachinery/pkg/runtime"
@@ -106,7 +106,6 @@ func Convert_pager_TestRunList_To_v1alpha1_TestRunList(in *pager.TestRunList, ou
 }
 
 func autoConvert_v1alpha1_TestRunSpec_To_pager_TestRunSpec(in *TestRunSpec, out *pager.TestRunSpec, s conversion.Scope) error {
-	out.Message = in.Message
 	out.Selector = (*v1.LabelSelector)(unsafe.Pointer(in.Selector))
 	out.MaxJobs = in.MaxJobs
 	return nil
@@ -118,7 +117,6 @@ func Convert_v1alpha1_TestRunSpec_To_pager_TestRunSpec(in *TestRunSpec, out *pag
 }
 
 func autoConvert_pager_TestRunSpec_To_v1alpha1_TestRunSpec(in *pager.TestRunSpec, out *TestRunSpec, s conversion.Scope) error {
-	out.Message = in.Message
 	out.Selector = (*v1.LabelSelector)(unsafe.Pointer(in.Selector))
 	out.MaxJobs = in.MaxJobs
 	return nil
@@ -131,6 +129,8 @@ func Convert_pager_TestRunSpec_To_v1alpha1_TestRunSpec(in *pager.TestRunSpec, ou
 
 func autoConvert_v1alpha1_TestRunStatus_To_pager_TestRunStatus(in *TestRunStatus, out *pager.TestRunStatus, s conversion.Scope) error {
 	out.Status = in.Status
+	out.Message = in.Message
+	out.Success = in.Success
 	return nil
 }
 
@@ -141,6 +141,8 @@ func Convert_v1alpha1_TestRunStatus_To_pager_TestRunStatus(in *TestRunStatus, ou
 
 func autoConvert_pager_TestRunStatus_To_v1alpha1_TestRunStatus(in *pager.TestRunStatus, out *TestRunStatus, s conversion.Scope) error {
 	out.Status = in.Status
+	out.Message = in.Message
+	out.Success = in.Success
 	return nil
 }
 

@@ -18,7 +18,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
-		"github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager"
+		"github.com//pkg/apis/pager"
 )
 
 // SchemeGroupVersion is group version used to register these objects

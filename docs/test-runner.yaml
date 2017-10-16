@@ -1,7 +1,7 @@
 apiVersion: pager.k8s.co/v1alpha1
 kind: TestRun
 metadata:
-  name: test-run2
+  name: test-run3
 spec:
   max-jobs: 2
   selector:

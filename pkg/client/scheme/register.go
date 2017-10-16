@@ -17,7 +17,7 @@ limitations under the License.
 package scheme
 
 import (
-	pagerv1alpha1 "github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
+	pagerv1alpha1 "github.com//pkg/apis/pager/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

@@ -19,8 +19,8 @@ limitations under the License.
 package internalversion
 
 import (
-	internalclientset "github.com/munnerz/k8s-api-pager-demo/pkg/client/internalclientset"
-	internalinterfaces "github.com/munnerz/k8s-api-pager-demo/pkg/informers/internalversion/internalinterfaces"
+	internalclientset "github.com//pkg/client/internalclientset"
+	internalinterfaces "github.com//pkg/informers/internalversion/internalinterfaces"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"

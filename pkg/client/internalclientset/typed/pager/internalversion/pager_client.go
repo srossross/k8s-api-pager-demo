@@ -17,5 +17,5 @@ limitations under the License.
 package internalversion
 
 import (
-	"github.com/munnerz/k8s-api-pager-demo/pkg/client/internalclientset/scheme"
+	"github.com//pkg/client/internalclientset/scheme"
 )

@@ -28,8 +28,6 @@ type TestRunList struct {
 }
 
 type TestRunSpec struct {
-	Message string `json:"message"`
-
 	// Label selector for pods. Existing ReplicaSets whose pods are
 	// selected by this will be the ones affected by this deployment.
 	// +optional
@@ -40,6 +38,9 @@ type TestRunSpec struct {
 
 type TestRunStatus struct {
 	Status string `json:"status"`
+	Message string `json:"message"`
+	Success bool `json:"success"`
+
 }
 
 // +genclient=true

@@ -1,7 +1,7 @@
 apiVersion: pager.k8s.co/v1alpha1
 kind: Test
 metadata:
-  name: test1
+  name: test-success
   labels:
     chart: router
 spec:
@@ -11,5 +11,37 @@ spec:
       - name: nginx
         image: nginx
         command: [echo, hello]
+      restartPolicy: Never
+      backoffLimit: 4
+---
+apiVersion: pager.k8s.co/v1alpha1
+kind: Test
+metadata:
+  name: test-fail
+  labels:
+    chart: router
+spec:
+  template:
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        command: [sh, -c, "exit 1"]
+      restartPolicy: Never
+      backoffLimit: 4
+---
+apiVersion: pager.k8s.co/v1alpha1
+kind: Test
+metadata:
+  name: test-sleep
+  labels:
+    chart: router
+spec:
+  template:
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+        command: [sh, -c, "sleep 100"]
       restartPolicy: Never
       backoffLimit: 4

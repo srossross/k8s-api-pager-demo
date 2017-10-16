@@ -17,8 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
-	scheme "github.com/munnerz/k8s-api-pager-demo/pkg/client/scheme"
+	v1alpha1 "github.com//pkg/apis/pager/v1alpha1"
+	scheme "github.com//pkg/client/scheme"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"

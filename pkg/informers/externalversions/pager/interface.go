@@ -19,8 +19,8 @@ limitations under the License.
 package pager
 
 import (
-	internalinterfaces "github.com/munnerz/k8s-api-pager-demo/pkg/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/munnerz/k8s-api-pager-demo/pkg/informers/externalversions/pager/v1alpha1"
+	internalinterfaces "github.com//pkg/informers/externalversions/internalinterfaces"
+	v1alpha1 "github.com//pkg/informers/externalversions/pager/v1alpha1"
 )
 
 // Interface provides access to each of this group's versions.

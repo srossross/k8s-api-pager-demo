@@ -19,10 +19,10 @@ limitations under the License.
 package v1alpha1
 
 import (
-	pager_v1alpha1 "github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
-	client "github.com/munnerz/k8s-api-pager-demo/pkg/client"
-	internalinterfaces "github.com/munnerz/k8s-api-pager-demo/pkg/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/munnerz/k8s-api-pager-demo/pkg/listers/pager/v1alpha1"
+	pager_v1alpha1 "github.com//pkg/apis/pager/v1alpha1"
+	client "github.com//pkg/client"
+	internalinterfaces "github.com//pkg/informers/externalversions/internalinterfaces"
+	v1alpha1 "github.com//pkg/listers/pager/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"

@@ -14,8 +14,8 @@ import (
 
 	"k8s.io/client-go/tools/cache"
 
-	"github.com/munnerz/k8s-api-pager-demo/pkg/client"
-	factory "github.com/munnerz/k8s-api-pager-demo/pkg/informers/externalversions"
+	"github.com//pkg/client"
+	factory "github.com//pkg/informers/externalversions"
 )
 
 

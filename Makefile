@@ -1,4 +1,4 @@
-PACKAGE_NAME := github.com/munnerz/k8s-api-pager-demo
+PACKAGE_NAME := github.com/
 
 # A temporary directory to store generator executors in
 BINDIR ?= bin

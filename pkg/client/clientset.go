@@ -18,7 +18,7 @@ package client
 
 import (
 	glog "github.com/golang/glog"
-	pagerv1alpha1 "github.com/munnerz/k8s-api-pager-demo/pkg/client/typed/pager/v1alpha1"
+	pagerv1alpha1 "github.com//pkg/client/typed/pager/v1alpha1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"

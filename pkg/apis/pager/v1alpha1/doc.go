@@ -1,5 +1,5 @@
 // +k8s:deepcopy-gen=package,register
-// +k8s:conversion-gen=github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager
+// +k8s:conversion-gen=github.com//pkg/apis/pager
 // +k8s:openapi-gen=true
 // +k8s:defaulter-gen=TypeMeta
 

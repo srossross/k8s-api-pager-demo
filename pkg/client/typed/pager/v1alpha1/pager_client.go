@@ -17,8 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/munnerz/k8s-api-pager-demo/pkg/apis/pager/v1alpha1"
-	"github.com/munnerz/k8s-api-pager-demo/pkg/client/scheme"
+	v1alpha1 "github.com//pkg/apis/pager/v1alpha1"
+	"github.com//pkg/client/scheme"
 	serializer "k8s.io/apimachinery/pkg/runtime/serializer"
 	rest "k8s.io/client-go/rest"
 )

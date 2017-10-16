@@ -17,9 +17,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/munnerz/k8s-api-pager-demo/pkg/client/internalclientset"
-	pagerinternalversion "github.com/munnerz/k8s-api-pager-demo/pkg/client/internalclientset/typed/pager/internalversion"
-	fakepagerinternalversion "github.com/munnerz/k8s-api-pager-demo/pkg/client/internalclientset/typed/pager/internalversion/fake"
+	clientset "github.com//pkg/client/internalclientset"
+	pagerinternalversion "github.com//pkg/client/internalclientset/typed/pager/internalversion"
+	fakepagerinternalversion "github.com//pkg/client/internalclientset/typed/pager/internalversion/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
