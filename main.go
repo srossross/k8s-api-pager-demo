@@ -13,9 +13,9 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com//pkg/client"
-	"github.com//pkg/run"
-	factory "github.com//pkg/informers/externalversions"
+	"github.com/srossross/k8s-test-runner/pkg/client"
+	"github.com/srossross/k8s-test-runner/pkg/run"
+	factory "github.com/srossross/k8s-test-runner/pkg/informers/externalversions"
 )
 
 var (

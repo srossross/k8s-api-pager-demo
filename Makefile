@@ -1,4 +1,4 @@
-PACKAGE_NAME := github.com/
+PACKAGE_NAME := github.com/srossross/k8s-test-runner
 
 # A temporary directory to store generator executors in
 BINDIR ?= bin
@@ -78,3 +78,6 @@ generate: .generate_exes $(TYPES_FILES)
 		--output-file-base zz_generated.conversion
 	# generate all pkg/client contents
 	$(HACK_DIR)/update-client-gen.sh
+
+cacheBuilds:
+	go list -f '{{.Deps}}' ./... | tr "[" " " | tr "]" " " |   xargs go list -f '{{if not .Standard}}{{.ImportPath}}{{end}}' |   xargs go install -a

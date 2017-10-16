@@ -6,8 +6,8 @@ import (
   "time"
   v1 "k8s.io/api/core/v1"
   metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-  client "github.com//pkg/client"
-  v1alpha1 "github.com//pkg/apis/pager/v1alpha1"
+  client "github.com/srossross/k8s-test-runner/pkg/client"
+  v1alpha1 "github.com/srossross/k8s-test-runner/pkg/apis/pager/v1alpha1"
 )
 
 func CreateTestRunEvent(cl client.Interface, testRun *v1alpha1.TestRun, test *v1alpha1.Test, Reason string, Message string) (error) {

@@ -8,10 +8,10 @@ import (
 	runtime "k8s.io/apimachinery/pkg/util/runtime"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
-	client "github.com//pkg/client"
-	factory "github.com//pkg/informers/externalversions"
+	client "github.com/srossross/k8s-test-runner/pkg/client"
+	factory "github.com/srossross/k8s-test-runner/pkg/informers/externalversions"
 
-	v1alpha1 "github.com//pkg/apis/pager/v1alpha1"
+	v1alpha1 "github.com/srossross/k8s-test-runner/pkg/apis/pager/v1alpha1"
 )
 
 var (

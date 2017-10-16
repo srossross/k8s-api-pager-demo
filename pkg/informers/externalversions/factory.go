@@ -19,9 +19,9 @@ limitations under the License.
 package externalversions
 
 import (
-	client "github.com//pkg/client"
-	internalinterfaces "github.com//pkg/informers/externalversions/internalinterfaces"
-	pager "github.com//pkg/informers/externalversions/pager"
+	client "github.com/srossross/k8s-test-runner/pkg/client"
+	internalinterfaces "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/internalinterfaces"
+	pager "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/pager"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"

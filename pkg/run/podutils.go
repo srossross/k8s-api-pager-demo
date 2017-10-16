@@ -14,8 +14,8 @@ import (
 
 	"k8s.io/client-go/tools/cache"
 
-	"github.com//pkg/client"
-	factory "github.com//pkg/informers/externalversions"
+	"github.com/srossross/k8s-test-runner/pkg/client"
+	factory "github.com/srossross/k8s-test-runner/pkg/informers/externalversions"
 )
 
 

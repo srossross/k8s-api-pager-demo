@@ -19,8 +19,8 @@ limitations under the License.
 package internalversion
 
 import (
-	internalclientset "github.com//pkg/client/internalclientset"
-	internalinterfaces "github.com//pkg/informers/internalversion/internalinterfaces"
+	internalclientset "github.com/srossross/k8s-test-runner/pkg/client/internalclientset"
+	internalinterfaces "github.com/srossross/k8s-test-runner/pkg/informers/internalversion/internalinterfaces"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"

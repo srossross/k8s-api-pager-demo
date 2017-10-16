@@ -17,9 +17,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com//pkg/client"
-	pagerv1alpha1 "github.com//pkg/client/typed/pager/v1alpha1"
-	fakepagerv1alpha1 "github.com//pkg/client/typed/pager/v1alpha1/fake"
+	clientset "github.com/srossross/k8s-test-runner/pkg/client"
+	pagerv1alpha1 "github.com/srossross/k8s-test-runner/pkg/client/typed/pager/v1alpha1"
+	fakepagerv1alpha1 "github.com/srossross/k8s-test-runner/pkg/client/typed/pager/v1alpha1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"

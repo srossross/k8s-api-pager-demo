@@ -17,5 +17,5 @@ limitations under the License.
 package internalversion
 
 import (
-	"github.com//pkg/client/internalclientset/scheme"
+	"github.com/srossross/k8s-test-runner/pkg/client/internalclientset/scheme"
 )

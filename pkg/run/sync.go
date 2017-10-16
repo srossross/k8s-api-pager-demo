@@ -5,8 +5,8 @@ import (
   // "fmt"
   // v1 "k8s.io/api/core/v1"
   // metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-  client "github.com//pkg/client"
-  v1alpha1 "github.com//pkg/apis/pager/v1alpha1"
+  client "github.com/srossross/k8s-test-runner/pkg/client"
+  v1alpha1 "github.com/srossross/k8s-test-runner/pkg/apis/pager/v1alpha1"
 )
 
 // sync will attempt to 'Sync' an alert resource. It checks to see if the alert
