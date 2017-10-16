@@ -18,7 +18,7 @@ package client
 
 import (
 	glog "github.com/golang/glog"
-	pagerv1alpha1 "github.com/srossross/k8s-test-runner/pkg/client/typed/pager/v1alpha1"
+	srossrossv1alpha1 "github.com/srossross/k8s-test-runner/pkg/client/typed/srossross/v1alpha1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
@@ -27,36 +27,35 @@ import (
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
-	PagerV1alpha1() pagerv1alpha1.PagerV1alpha1Interface
-	// Deprecated: please explicitly pick a version if possible.
-	Pager() pagerv1alpha1.PagerV1alpha1Interface
-
+	SrossrossV1alpha1() srossrossv1alpha1.SrossrossV1alpha1Interface
 	CoreV1() corev1.CoreV1Interface
+	// Deprecated: please explicitly pick a version if possible.
+	Srossross() srossrossv1alpha1.SrossrossV1alpha1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	*pagerv1alpha1.PagerV1alpha1Client
+	*srossrossv1alpha1.SrossrossV1alpha1Client
 	*corev1.CoreV1Client
 }
 
-// PagerV1alpha1 retrieves the PagerV1alpha1Client
-func (c *Clientset) PagerV1alpha1() pagerv1alpha1.PagerV1alpha1Interface {
+// SrossrossV1alpha1 retrieves the SrossrossV1alpha1Client
+func (c *Clientset) SrossrossV1alpha1() srossrossv1alpha1.SrossrossV1alpha1Interface {
 	if c == nil {
 		return nil
 	}
-	return c.PagerV1alpha1Client
+	return c.SrossrossV1alpha1Client
 }
 
-// Deprecated: Pager retrieves the default version of PagerClient.
+// Deprecated: Srossross retrieves the default version of SrossrossClient.
 // Please explicitly pick a version.
-func (c *Clientset) Pager() pagerv1alpha1.PagerV1alpha1Interface {
+func (c *Clientset) Srossross() srossrossv1alpha1.SrossrossV1alpha1Interface {
 	if c == nil {
 		return nil
 	}
-	return c.PagerV1alpha1Client
+	return c.SrossrossV1alpha1Client
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -83,7 +82,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	}
 	var cs Clientset
 	var err error
-	cs.PagerV1alpha1Client, err = pagerv1alpha1.NewForConfig(&configShallowCopy)
+	cs.SrossrossV1alpha1Client, err = srossrossv1alpha1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +106,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 // panics if there is an error in the config.
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
-	cs.PagerV1alpha1Client = pagerv1alpha1.NewForConfigOrDie(c)
+	cs.SrossrossV1alpha1Client = srossrossv1alpha1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -116,7 +115,7 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 // New creates a new Clientset for the given RESTClient.
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
-	cs.PagerV1alpha1Client = pagerv1alpha1.New(c)
+	cs.SrossrossV1alpha1Client = srossrossv1alpha1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs
