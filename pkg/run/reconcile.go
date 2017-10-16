@@ -33,7 +33,7 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 		return
 	}
 
-	tests, err := sharedFactory.Pager().V1alpha1().Tests().Lister().Tests(testRun.Namespace).List(selector)
+	tests, err := sharedFactory.Srossross().V1alpha1().Tests().Lister().Tests(testRun.Namespace).List(selector)
 
 	if err != nil {
 		runtime.HandleError(fmt.Errorf("error getting list of tests: %s", err.Error()))
@@ -112,7 +112,11 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 		testRun.Status.Success = failCount == 0
 		testRun.Status.Message = fmt.Sprintf("Ran %v tests, %v failures", completedCount, failCount)
 
-		if _, err := cl.PagerV1alpha1().TestRuns(testRun.Namespace).Update(testRun); err != nil {
+		if len(testRun.Namespace) == 0 {
+			testRun.Namespace = "default"
+		}
+		log.Printf("Saving '%v/%v'", testRun.Namespace, testRun.Name)
+		if _, err := cl.SrossrossV1alpha1().TestRuns(testRun.Namespace).Update(testRun); err != nil {
 			runtime.HandleError(fmt.Errorf("error saving update to tesrun: %s", err.Error()))
 		}
 
@@ -126,7 +130,8 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 
 func Reconcile(sharedFactory factory.SharedInformerFactory, cl client.Interface) {
 
-  runs, err := sharedFactory.Pager().V1alpha1().TestRuns().Lister().TestRuns(metav1.NamespaceAll).List(labels.Everything())
+	lister := sharedFactory.Srossross().V1alpha1().TestRuns().Lister()
+  runs, err := lister.TestRuns(metav1.NamespaceAll).List(labels.Everything())
 
   if err != nil {
     runtime.HandleError(fmt.Errorf("error getting list of testruns: %s", err.Error()))

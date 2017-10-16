@@ -19,7 +19,7 @@ func CreateTestRunEvent(cl client.Interface, testRun *v1alpha1.TestRun, test *v1
     Name: testRun.Name,
     UID: testRun.UID,
      // FIXME: not sure why testRun.APIVersion is empty
-    APIVersion: "pager.k8s.co/v1alpha1",
+    APIVersion: "srossross.github.io/v1alpha1",
     ResourceVersion: testRun.ResourceVersion,
   }
 

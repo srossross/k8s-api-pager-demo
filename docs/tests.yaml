@@ -1,4 +1,4 @@
-apiVersion: pager.k8s.co/v1alpha1
+apiVersion: srossross.github.io/v1alpha1
 kind: Test
 metadata:
   name: test-success
@@ -14,7 +14,7 @@ spec:
       restartPolicy: Never
       backoffLimit: 4
 ---
-apiVersion: pager.k8s.co/v1alpha1
+apiVersion: srossross.github.io/v1alpha1
 kind: Test
 metadata:
   name: test-fail
@@ -30,7 +30,7 @@ spec:
       restartPolicy: Never
       backoffLimit: 4
 ---
-apiVersion: pager.k8s.co/v1alpha1
+apiVersion: srossross.github.io/v1alpha1
 kind: Test
 metadata:
   name: test-sleep

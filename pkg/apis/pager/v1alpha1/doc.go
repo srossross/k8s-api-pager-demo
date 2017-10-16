@@ -4,5 +4,5 @@
 // +k8s:defaulter-gen=TypeMeta
 
 // Package v1alpha1 is the v1alpha1 version of the API.
-// +groupName=pager.k8s.co
+// +groupName=srossross.github.io
 package v1alpha1

@@ -1,4 +1,4 @@
-apiVersion: pager.k8s.co/v1alpha1
+apiVersion: srossross.github.io/v1alpha1
 kind: TestRun
 metadata:
   name: test-run3

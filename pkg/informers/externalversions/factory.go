@@ -21,7 +21,7 @@ package externalversions
 import (
 	client "github.com/srossross/k8s-test-runner/pkg/client"
 	internalinterfaces "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/internalinterfaces"
-	pager "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/pager"
+	srossross "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/srossross"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
@@ -110,9 +110,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Pager() pager.Interface
+	Srossross() srossross.Interface
 }
 
-func (f *sharedInformerFactory) Pager() pager.Interface {
-	return pager.New(f)
+func (f *sharedInformerFactory) Srossross() srossross.Interface {
+	return srossross.New(f)
 }

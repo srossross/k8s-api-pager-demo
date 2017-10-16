@@ -74,7 +74,7 @@ func main() {
 	// create/replace/update/delete operations are missed when watching
 	sharedFactory = factory.NewSharedInformerFactory(cl, time.Second*30)
 
-	informer := sharedFactory.Pager().V1alpha1().TestRuns().Informer()
+	informer := sharedFactory.Srossross().V1alpha1().TestRuns().Informer()
 	// we add a new event handler, watching for changes to API resources.
 	informer.AddEventHandler(
 		cache.ResourceEventHandlerFuncs{
@@ -88,7 +88,7 @@ func main() {
 		},
 	)
 
-	testInformer := sharedFactory.Pager().V1alpha1().Tests().Informer()
+	testInformer := sharedFactory.Srossross().V1alpha1().Tests().Informer()
 	// we add a new event handler, watching for changes to API resources.
 	testInformer.AddEventHandler(
 		cache.ResourceEventHandlerFuncs{
@@ -115,46 +115,6 @@ func main() {
 			DeleteFunc: enqueue,
 		},
 	)
-
-	// TODO: remove comments
-	// run1, err := cl.PagerV1alpha1().TestRuns("default").Get("test-run1", metav1.GetOptions{})
-	// // obj, err := sharedFactory.Pager().V1alpha1().TestRuns().Lister().TestRuns("default").Get("cncf-test-runner")
-	// if err != nil {
-	// 	panic(err)
-	// 	// return
-	// }
-	//
-	// log.Printf("Namespace: '%v'", run1.Namespace)
-	//
-	// selector, err := metav1.LabelSelectorAsSelector(run1.Spec.Selector)
-	//
-	// if err != nil {
-	// 	panic(err)
-	// 	// return
-	// }
-	//
-	// log.Printf("Selector: '%v'", selector)
-	// log.Printf("--")
-	//
-	//
-	// matchingTests, err := cl.PagerV1alpha1().Tests(run1.Namespace).List(metav1.ListOptions{
-	// 	LabelSelector: selector.String(),
-	// })
-	// // matchingTests, err := cl.PagerV1alpha1().Tests(run1.Namespace).List(metav1.ListOptions{})
-	//
-	// if err != nil {
-	// 	log.Fatalf("Could not get tests: %s", err.Error())
-	// 	panic("can not get tests", )
-	// 	// return
-	// }
-	//
-	// for _, matchingTest := range matchingTests.Items {
-	// 	run.RunTest(cl, run1, matchingTest)
-	// 	// log.Printf("matchingTest %v", matchingTest.Spec.Template)
-	// }
-	//
-	//
-	// panic("!all good!")
 
 	// start the informer. This will cause it to begin receiving updates from
 	// the configured API server and firing event handlers in response.
@@ -213,17 +173,6 @@ func work() {
 // enqueue will add an object 'obj' into the workqueue. The object being added
 // must be of type metav1.Object, metav1.ObjectAccessor or cache.ExplicitKey.
 func enqueue(obj interface{}) {
-	// DeletionHandlingMetaNamespaceKeyFunc will convert an object into a
-	// 'namespace/name' string. We do this because our item may be processed
-	// much later than now, and so we want to ensure it gets a fresh copy of
-	// the resource when it starts. Also, this allows us to keep adding the
-	// same item into the work queue without duplicates building up.
-	// key, err := cache.DeletionHandlingMetaNamespaceKeyFunc(obj)
-	// if err != nil {
-	// 	runtime.HandleError(fmt.Errorf("error obtaining key for object being enqueue: %s", err.Error()))
-	// 	return
-	// }
-	// add the item to the queue
 	queue.Add("Reconcile")
 }
 
