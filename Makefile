@@ -11,6 +11,9 @@ CGO_ENABLED := 0
 LDFLAGS := -X github.com/srossross/k8s-test-runner/main.VERSION=$(shell echo $${CIRCLE_TAG:-?}) \
   -X github.com/srossross/k8s-test-runner/main.BUILD_TIME=$(shell date -u +%Y-%m-%d)
 
+USERNAME := $(shell echo ${CIRCLE_PROJECT_USERNAME})
+REPONAME := $(shell echo ${CIRCLE_PROJECT_REPONAME})
+
 # A list of all types.go files in pkg/apis
 TYPES_FILES = $(shell find pkg/apis -name types.go)
 
