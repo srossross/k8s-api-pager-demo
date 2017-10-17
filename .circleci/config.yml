@@ -45,13 +45,12 @@ jobs:
           name: Create Github Release
           command: |
             go get github.com/aktau/github-release
-            ls -al /tmp/commands/
-            cat Makefile
-            echo Uploading to Release ${CIRCLE_TAG:-$(git describe --always)}
+
+            echo Uploading to Release ${CIRCLE_TAG}
             echo Uploading to ${CIRCLE_PROJECT_USERNAME} ${CIRCLE_PROJECT_REPONAME}
 
-            make release TAG=${CIRCLE_TAG:-$(git describe --always)}
-            make upload TAG=${CIRCLE_TAG:-$(git describe --always)}
+            make release TAG=${CIRCLE_TAG}
+            make upload TAG=${CIRCLE_TAG}
 
 
 workflows:
