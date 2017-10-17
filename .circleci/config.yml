@@ -16,7 +16,7 @@ jobs:
           name: Go Get
           command: |
             # go get -v -t -d ./... github.com/golang/lint/golint
-            go get -v -t -d github.com/imdario/mergo golang.org/x/crypto
+            go get -v -t -d github.com/imdario/mergo golang.org/x/crypto/ssh
       # - run: go test -v ./...
       - run: mkdir -p /tmp/commands
       # - run: $GOPATH/bin/golint ./...
