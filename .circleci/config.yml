@@ -7,7 +7,7 @@ jobs:
     docker:
       # specify the version
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/srossross/k8s-test-runner
     steps:
       - checkout
 
@@ -34,7 +34,7 @@ jobs:
     docker:
       # specify the version
       - image: circleci/golang:1.8
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/srossross/k8s-test-runner
     steps:
       - checkout
 
