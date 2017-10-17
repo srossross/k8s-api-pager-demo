@@ -114,9 +114,6 @@ func TestRunner(sharedFactory factory.SharedInformerFactory, cl client.Interface
 		testRun.Status.Success = failCount == 0
 		testRun.Status.Message = fmt.Sprintf("Ran %v tests, %v failures", completedCount, failCount)
 
-		if len(testRun.Namespace) == 0 {
-			testRun.Namespace = "default"
-		}
 		log.Printf("Saving '%v/%v'", testRun.Namespace, testRun.Name)
 		if _, err := cl.SrossrossV1alpha1().TestRuns(testRun.Namespace).Update(testRun); err != nil {
 			return err
@@ -138,19 +135,23 @@ func Reconcile(sharedFactory factory.SharedInformerFactory, cl client.Interface)
     runtime.HandleError(fmt.Errorf("error getting list of testruns: %s", err.Error()))
     return
   }
+
+
 	// FIXME: make our informers more efficient
 	// informer should queue the testrun we care about instead of looping...
   for _, testRun := range runs {
+
+		// FIXME: why is this not set?
+		if len(testRun.Namespace) == 0 {
+			testRun.Namespace = "default"
+		}
+
 		err := TestRunner(sharedFactory, cl, testRun)
 
 		if err != nil {
 			testRun.Status.Status = StatusComplete
 			testRun.Status.Success = false
 			testRun.Status.Message = fmt.Sprintf("Critical error during test run (%v)", err.Error())
-
-			if len(testRun.Namespace) == 0 {
-				testRun.Namespace = "default"
-			}
 
 			log.Printf("Saving Error state for '%v/%v'", testRun.Namespace, testRun.Name)
 			if _, err := cl.SrossrossV1alpha1().TestRuns(testRun.Namespace).Update(testRun); err != nil {

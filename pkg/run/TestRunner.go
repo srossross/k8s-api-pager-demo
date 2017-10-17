@@ -11,11 +11,15 @@ import (
 )
 
 func CreateTestRunEvent(cl client.Interface, testRun *v1alpha1.TestRun, test *v1alpha1.Test, Reason string, Message string) (error) {
+  Namespace := testRun.Namespace
+  if len(Namespace) == 0 {
+    Namespace = "default"
+  }
 
   objectReference := v1.ObjectReference{
     // FIXME: not sure why testRun.Kind is empty
     Kind: "TestRun",
-    Namespace: testRun.Namespace,
+    Namespace: Namespace,
     Name: testRun.Name,
     UID: testRun.UID,
      // FIXME: not sure why testRun.APIVersion is empty
@@ -42,7 +46,7 @@ func CreateTestRunEvent(cl client.Interface, testRun *v1alpha1.TestRun, test *v1
     "Normal",
   }
 
-  _, err := cl.CoreV1().Events(test.Namespace).Create(&event)
+  _, err := cl.CoreV1().Events(Namespace).Create(&event)
   if err != nil {
     log.Printf("Error Creating event while starting test %v", err)
     return err
@@ -64,6 +68,11 @@ func CreateTestPod(cl client.Interface, testRun *v1alpha1.TestRun, test *v1alpha
 	log.Printf("RunTest")
 	log.Printf("Test '%v'", test)
 
+  Namespace := testRun.Namespace
+  if len(Namespace) == 0 {
+    Namespace = "default"
+  }
+
   err := CreateTestRunEventStart(cl, testRun, test)
   if err != nil {
     return err
@@ -74,7 +83,7 @@ func CreateTestPod(cl client.Interface, testRun *v1alpha1.TestRun, test *v1alpha
     metav1.TypeMeta{},
     metav1.ObjectMeta{
       GenerateName: test.Name,
-      Namespace: test.Namespace,
+      Namespace: Namespace,
       Annotations: map[string]string{
         "test-run": testRun.Name,
         "test": test.Name,
@@ -86,7 +95,7 @@ func CreateTestPod(cl client.Interface, testRun *v1alpha1.TestRun, test *v1alpha
   }
 
 
-  result, err := cl.CoreV1().Pods(test.Namespace).Create(pod)
+  result, err := cl.CoreV1().Pods(Namespace).Create(pod)
   if err != nil {
     CreateTestRunEvent(
       cl, testRun, test, "PodCreationFailure",

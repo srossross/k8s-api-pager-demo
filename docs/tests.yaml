@@ -42,6 +42,6 @@ spec:
       containers:
       - name: nginx
         image: nginx
-        command: [sh, -c, "sleep 100"]
+        command: [sh, -c, "sleep 20"]
       restartPolicy: Never
       backoffLimit: 4

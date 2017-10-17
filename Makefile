@@ -98,6 +98,25 @@ build: ## build for any arch
 dockerBuild: ## Build docker container
 	docker build -t srossross/k8s-test-controller:latest .
 
+release: ## Create github release
+	github-release release \
+		--user $(USERNAME) \
+		--repo $(REPONAME) \
+		--tag $(TAG) \
+		--name "Release $(TAG)" \
+		--description "TODO: Description"
+
+upload: ## Upload build artifacts to github
+
+	github-release upload \
+		--user $(USERNAME) \
+		--repo $(REPONAME) \
+		--tag $(TAG) \
+		--name "k8s-test-controller-linux-amd64." \
+		--file /tmp/commands/k8s-test-controller-linux-amd64.tgz
+
+
+
 .PHONY: help
 
 help: ## show this help and exit
