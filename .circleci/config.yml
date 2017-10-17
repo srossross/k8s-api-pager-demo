@@ -29,7 +29,7 @@ jobs:
       - persist_to_workspace:
           root: /tmp/commands
           paths:
-            - template-linux-amd64.tgz
+            - k8s-test-controller-linux-amd64.tgz
   deploy:
     docker:
       # specify the version
