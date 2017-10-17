@@ -5,6 +5,12 @@ BINDIR ?= bin
 GOPATH ?= $HOME/go
 HACK_DIR ?= hack
 
+GOOS := $(shell go env GOHOSTOS)
+GOARCH := $(shell go env GOHOSTARCH)
+CGO_ENABLED := 0
+LDFLAGS := -X github.com/srossross/k8s-test-runner/main.VERSION=$(shell echo $${CIRCLE_TAG:-?}) \
+  -X github.com/srossross/k8s-test-runner/main.BUILD_TIME=$(shell date -u +%Y-%m-%d)
+
 # A list of all types.go files in pkg/apis
 TYPES_FILES = $(shell find pkg/apis -name types.go)
 
@@ -52,7 +58,7 @@ $(BINDIR)/informer-gen:
 
 
 # This target runs all required generators against our API types.
-generate: .generate_exes $(TYPES_FILES)
+generate: .generate_exes $(TYPES_FILES) ## Generate files
 	# Generate defaults
 	$(BINDIR)/defaulter-gen \
 		--v 1 --logtostderr \
@@ -79,5 +85,22 @@ generate: .generate_exes $(TYPES_FILES)
 	# generate all pkg/client contents
 	$(HACK_DIR)/update-client-gen.sh
 
-cacheBuilds:
+cacheBuilds: ## Make go build and go run faster
 	go list -f '{{.Deps}}' ./... | tr "[" " " | tr "]" " " |   xargs go list -f '{{if not .Standard}}{{.ImportPath}}{{end}}' |   xargs go install -a
+
+
+build: ## build for any arch
+	mkdir -p /tmp/commands
+
+	CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags "$(LDFLAGS)" -o ./k8s-test-controller-$(GOOS)-$(GOARCH) ./main.go
+	tar -zcvf /tmp/commands/k8s-test-controller-$(GOOS)-$(GOARCH).tgz ./k8s-test-controller-$(GOOS)-$(GOARCH)
+
+dockerBuild: ## Build docker container
+	docker build -t srossross/k8s-test-controller:latest .
+
+.PHONY: help
+
+help: ## show this help and exit
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.DEFAULT_GOAL := help

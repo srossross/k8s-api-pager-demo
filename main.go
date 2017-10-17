@@ -18,6 +18,9 @@ import (
 )
 
 var (
+	VERSION string
+	BUILD_TIME string
+
 	// apiserverURL is the URL of the API server to connect to
 	kubeconfig = flag.String("kubeconfig", "", "Path to a kubeconfig file")
 	// pushbulletToken is the pushbullet API token to use
@@ -49,6 +52,10 @@ var (
 
 func main() {
 	flag.Parse()
+
+	// TODO: add proper linker flags
+	log.Printf("Test controller version: %s", VERSION)
+	log.Printf("               Built on: %s", BUILD_TIME)
 
 	var err error
 
