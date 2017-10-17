@@ -1,5 +1,5 @@
 bin/
 .get_deps
 .generate_exes
-k8s-test-runner
+k8s-test-controller
 k8s-test-controller-*

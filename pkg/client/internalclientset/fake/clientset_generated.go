@@ -17,9 +17,9 @@ limitations under the License.
 package fake
 
 import (
-	clientset "github.com/srossross/k8s-test-runner/pkg/client/internalclientset"
-	pagerinternalversion "github.com/srossross/k8s-test-runner/pkg/client/internalclientset/typed/pager/internalversion"
-	fakepagerinternalversion "github.com/srossross/k8s-test-runner/pkg/client/internalclientset/typed/pager/internalversion/fake"
+	clientset "github.com/srossross/k8s-test-controller/pkg/client/internalclientset"
+	pagerinternalversion "github.com/srossross/k8s-test-controller/pkg/client/internalclientset/typed/pager/internalversion"
+	fakepagerinternalversion "github.com/srossross/k8s-test-controller/pkg/client/internalclientset/typed/pager/internalversion/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"

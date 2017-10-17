@@ -1,5 +1,5 @@
 // +k8s:deepcopy-gen=package,register
-// +k8s:conversion-gen=github.com/srossross/k8s-test-runner/pkg/apis/pager
+// +k8s:conversion-gen=github.com/srossross/k8s-test-controller/pkg/apis/pager
 // +k8s:openapi-gen=true
 // +k8s:defaulter-gen=TypeMeta
 

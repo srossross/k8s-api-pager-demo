@@ -19,7 +19,7 @@ limitations under the License.
 package v1alpha1
 
 import (
-	internalinterfaces "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/internalinterfaces"
+	internalinterfaces "github.com/srossross/k8s-test-controller/pkg/informers/externalversions/internalinterfaces"
 )
 
 // Interface provides access to all the informers in this group version.

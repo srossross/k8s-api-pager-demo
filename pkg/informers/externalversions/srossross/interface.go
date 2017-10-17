@@ -19,8 +19,8 @@ limitations under the License.
 package srossross
 
 import (
-	internalinterfaces "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/internalinterfaces"
-	v1alpha1 "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/srossross/v1alpha1"
+	internalinterfaces "github.com/srossross/k8s-test-controller/pkg/informers/externalversions/internalinterfaces"
+	v1alpha1 "github.com/srossross/k8s-test-controller/pkg/informers/externalversions/srossross/v1alpha1"
 )
 
 // Interface provides access to each of this group's versions.

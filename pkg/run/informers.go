@@ -6,7 +6,7 @@ import (
 
   workqueue "k8s.io/client-go/util/workqueue"
   cache "k8s.io/client-go/tools/cache"
-  factory "github.com/srossross/k8s-test-runner/pkg/informers/externalversions"
+  factory "github.com/srossross/k8s-test-controller/pkg/informers/externalversions"
 )
 
 func NewTestRunInformer(sharedFactory factory.SharedInformerFactory, queue workqueue.RateLimitingInterface) cache.SharedIndexInformer {

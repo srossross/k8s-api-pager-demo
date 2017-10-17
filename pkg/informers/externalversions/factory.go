@@ -19,9 +19,9 @@ limitations under the License.
 package externalversions
 
 import (
-	client "github.com/srossross/k8s-test-runner/pkg/client"
-	internalinterfaces "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/internalinterfaces"
-	srossross "github.com/srossross/k8s-test-runner/pkg/informers/externalversions/srossross"
+	client "github.com/srossross/k8s-test-controller/pkg/client"
+	internalinterfaces "github.com/srossross/k8s-test-controller/pkg/informers/externalversions/internalinterfaces"
+	srossross "github.com/srossross/k8s-test-controller/pkg/informers/externalversions/srossross"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"

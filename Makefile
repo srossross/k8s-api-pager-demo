@@ -1,4 +1,4 @@
-PACKAGE_NAME := github.com/srossross/k8s-test-runner
+PACKAGE_NAME := github.com/srossross/k8s-test-controller
 
 # A temporary directory to store generator executors in
 BINDIR ?= bin
@@ -8,8 +8,8 @@ HACK_DIR ?= hack
 GOOS := $(shell go env GOHOSTOS)
 GOARCH := $(shell go env GOHOSTARCH)
 CGO_ENABLED := 0
-LDFLAGS := -X github.com/srossross/k8s-test-runner/main.VERSION=$(shell echo $${CIRCLE_TAG:-?}) \
-  -X github.com/srossross/k8s-test-runner/main.BUILD_TIME=$(shell date -u +%Y-%m-%d)
+LDFLAGS := -X github.com/srossross/k8s-test-controller/main.VERSION=$(shell echo $${CIRCLE_TAG:-?}) \
+  -X github.com/srossross/k8s-test-controller/main.BUILD_TIME=$(shell date -u +%Y-%m-%d)
 
 USERNAME := $(shell echo ${CIRCLE_PROJECT_USERNAME})
 REPONAME := $(shell echo ${CIRCLE_PROJECT_REPONAME})

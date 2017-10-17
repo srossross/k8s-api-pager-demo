@@ -18,7 +18,7 @@ package client
 
 import (
 	glog "github.com/golang/glog"
-	srossrossv1alpha1 "github.com/srossross/k8s-test-runner/pkg/client/typed/srossross/v1alpha1"
+	srossrossv1alpha1 "github.com/srossross/k8s-test-controller/pkg/client/typed/srossross/v1alpha1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
