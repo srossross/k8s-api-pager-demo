@@ -12,9 +12,11 @@ jobs:
       - checkout
 
       # specify any bash command here prefixed with `run: `
-      # - run:
-      #     name: Go Get
-      #     command: go get -v -t -d ./... github.com/golang/lint/golint
+      - run:
+          name: Go Get
+          command: |
+            # go get -v -t -d ./... github.com/golang/lint/golint
+            go get -v -t -d github.com/imdario/mergo
       # - run: go test -v ./...
       - run: mkdir -p /tmp/commands
       # - run: $GOPATH/bin/golint ./...
